@@ -1,0 +1,16 @@
+.movie-card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px;
+  width: 300px; /* You can adjust the width as needed */
+}
+
+.movie-card-image {
+  height: 500px; /* Set a max height for the image */
+  -o-object-fit: cover;
+     object-fit: cover; /* Ensures the image doesn't distort */
+}
+
+.director-details {
+  margin-left: 20px; /* Adjust this value for indentation */
+}/*# sourceMappingURL=movie-card.css.map */
