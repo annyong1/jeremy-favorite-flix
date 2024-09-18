@@ -1,5 +1,3 @@
-//new github
-
 import { useState, useEffect } from 'react';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
@@ -7,8 +5,7 @@ import { LoginView } from '../login-view/login-view';
 import { SignupView } from '../signup-view/signup-view';
 import { NavigationBar } from '../navigation-bar/navigation-bar';
 import { ProfileView } from '../profile-view/profile-view';
-import { Row } from 'react-bootstrap';
-import { Col } from 'react-bootstrap';
+import { Row, Col, FormControl } from 'react-bootstrap';
 import {
 	BrowserRouter,
 	Routes,
@@ -20,6 +17,8 @@ import axios from 'axios';
 
 export const MainView = () => {
 	const [movies, setMovies] = useState([]);
+	const [filteredMovies, setFilteredMovies] = useState([]);
+	const [searchQuery, setSearchQuery] = useState('');
 	const storedUser = JSON.parse(localStorage.getItem('user'));
 	const storedToken = localStorage.getItem('token');
 	const [user, setUser] = useState(storedUser ? storedUser : null);
@@ -48,7 +47,6 @@ export const MainView = () => {
 		}
 	}
 
-	// Add movie to users favorite list
 	async function handleAddToFavorites(movie) {
 		try {
 			const response = await fetch(
@@ -70,7 +68,6 @@ export const MainView = () => {
 		}
 	}
 
-	// Delete movie from users favorites
 	async function handleRemoveFromFavorites(movie) {
 		return await axios
 			.delete(
@@ -118,6 +115,7 @@ export const MainView = () => {
 				};
 			});
 			setMovies(movies);
+			setFilteredMovies(movies);
 		} catch (error) {
 			console.log(error);
 		}
@@ -129,6 +127,16 @@ export const MainView = () => {
 		getUser();
 		fetchMovies(token);
 	}, [token]);
+
+	const handleSearch = (event) => {
+		const query = event.target.value.toLowerCase();
+		setSearchQuery(query);
+
+		const filtered = movies.filter((movie) =>
+			movie.title.toLowerCase().includes(query)
+		);
+		setFilteredMovies(filtered);
+	};
 
 	return (
 		<BrowserRouter>
@@ -195,12 +203,24 @@ export const MainView = () => {
 								<Col>The list is empty!</Col>
 							) : (
 								<>
-									{movies.map((movie) => (
+									<Row className='justify-content-md-center'>
+										<Col md={6} className='d-flex justify-content-center'>
+											{/* Add search input */}
+											<FormControl
+												type='text'
+												placeholder='Search for a movie...'
+												value={searchQuery}
+												onChange={handleSearch}
+												className='mb-3 mt-3'
+												style={{ width: '100%' }} // Ensures the FormControl fits within the smaller column
+											/>
+										</Col>
+									</Row>
+									{filteredMovies.map((movie) => (
 										<Col className='mb-4' key={movie._id} md={3}>
 											<MovieCard
 												user={user}
 												movie={movie}
-												
 												handleAddToFavorites={() => handleAddToFavorites(movie)}
 												handleRemoveFromFavorites={() =>
 													handleRemoveFromFavorites(movie)
